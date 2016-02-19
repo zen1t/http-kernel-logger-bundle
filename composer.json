@@ -6,5 +6,8 @@
             "email": "arturvesker@gmail.com"
         }
     ],
-    "require": {}
+    "require": {},
+    "autoload": {
+      "psr-4": { "Vesax\\HttpKernelLoggerBundle\\": "" }
+    }
 }
