@@ -1,0 +1,10 @@
+{
+    "name": "vesax/http-kernel-logger-bundle",
+    "authors": [
+        {
+            "name": "Artur Vesker",
+            "email": "arturvesker@gmail.com"
+        }
+    ],
+    "require": {}
+}
