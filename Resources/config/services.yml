@@ -1,0 +1,3 @@
+services:
+    vesax.http_kernel_logger.formatter:
+        class: Vesax\HttpKernelLoggerBundle\Logger\Formatter
