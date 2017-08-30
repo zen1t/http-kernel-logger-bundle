@@ -25,7 +25,7 @@ class VesaxHttpKernelLoggerExtension extends Extension
         $config = $this->processConfiguration($configuration, $configs);
 
         foreach ($config['zones'] as $rule => $zoneOptions) {
-            $zoneLoggerDefinition = new Definition('Vesax\HttpKernelLoggerBundle\EventListener\TerminateListener', [
+            $zoneLoggerDefinition = new Definition('Vesax\HttpKernelLoggerBundle\EventListener\ResponseListener', [
                 new Reference('logger'),
                 new Reference('vesax.http_kernel_logger.formatter'),
                 '|' . $rule . '|'

@@ -5,7 +5,6 @@ namespace Vesax\HttpKernelLoggerBundle\EventListener;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Symfony\Component\HttpKernel\Event\FilterResponseEvent;
-use Symfony\Component\HttpKernel\Event\PostResponseEvent;
 use Symfony\Component\HttpKernel\KernelEvents;
 use Vesax\HttpKernelLoggerBundle\Logger\Formatter;
 
@@ -13,9 +12,9 @@ use Vesax\HttpKernelLoggerBundle\Logger\Formatter;
  * Class TerminateListener
  *
  * @package Vesax\HttpKernelLoggerBundle
- * @author Artur Vesker
+ * @author  Artur Vesker
  */
-class TerminateListener implements EventSubscriberInterface
+class ResponseListener implements EventSubscriberInterface
 {
 
     /**
@@ -37,8 +36,8 @@ class TerminateListener implements EventSubscriberInterface
      * TerminateListener constructor.
      *
      * @param LoggerInterface $logger
-     * @param Formatter $formatter
-     * @param $rule
+     * @param Formatter       $formatter
+     * @param                 $rule
      */
     public function __construct(LoggerInterface $logger, Formatter $formatter, $rule)
     {
@@ -48,35 +47,34 @@ class TerminateListener implements EventSubscriberInterface
     }
 
     /**
-     * @param PostResponseEvent $event
+     * @param FilterResponseEvent $event ;
      */
-    public function onTerminate(PostResponseEvent $event)
+    public function onResponse(FilterResponseEvent $event)
     {
         if (!$event->isMasterRequest()) {
             return;
         }
 
         $request = $event->getRequest();
-
         if ($request->getRealMethod() == 'OPTIONS') {
             return;
         };
 
-        if (!preg_match($this->rule, $request->getRequestUri())) {
+        if (!preg_match($this->rule, $request->getPathInfo())) {
             return;
         }
-
         $response = $event->getResponse();
 
         $message = $this->formatter->format($request, $response);
-
         if ($response->isClientError()) {
             $this->logger->error($message);
+
             return;
         }
 
         if ($response->isServerError()) {
             $this->logger->critical($message);
+
             return;
         }
 
@@ -89,7 +87,7 @@ class TerminateListener implements EventSubscriberInterface
     public static function getSubscribedEvents()
     {
         return [
-            KernelEvents::TERMINATE => 'onTerminate'
+            KernelEvents::RESPONSE => 'onResponse'
         ];
     }
 
