@@ -5,7 +5,7 @@ Log request and responses
 ## Installation
 ```
 # bash
-composer require vesax/http-kernel-logger-bundle dev-master
+composer require zent/http-kernel-logger-bundle ~0.1
 
 ```
 
