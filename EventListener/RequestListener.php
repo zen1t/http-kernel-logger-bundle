@@ -4,7 +4,7 @@ namespace Vesax\HttpKernelLoggerBundle\EventListener;
 
 use Psr\Log\LoggerInterface;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
-use Symfony\Component\HttpKernel\Event\FilterResponseEvent;
+use Symfony\Component\HttpKernel\Event\GetResponseEvent;
 use Symfony\Component\HttpKernel\KernelEvents;
 use Vesax\HttpKernelLoggerBundle\Logger\Formatter;
 
@@ -14,7 +14,7 @@ use Vesax\HttpKernelLoggerBundle\Logger\Formatter;
  * @package Vesax\HttpKernelLoggerBundle
  * @author  Artur Vesker
  */
-class ResponseListener implements EventSubscriberInterface
+class RequestListener implements EventSubscriberInterface
 {
 
     /**
@@ -47,9 +47,9 @@ class ResponseListener implements EventSubscriberInterface
     }
 
     /**
-     * @param FilterResponseEvent $event ;
+     * @param GetResponseEvent $event ;
      */
-    public function onResponse(FilterResponseEvent $event)
+    public function onRequest(GetResponseEvent $event)
     {
         if (!$event->isMasterRequest()) {
             return;
@@ -65,19 +65,7 @@ class ResponseListener implements EventSubscriberInterface
         }
 
         $response = $event->getResponse();
-
         $message = $this->formatter->format($request, $response);
-        if ($response->isClientError()) {
-            $this->logger->error($message);
-
-            return;
-        }
-
-        if ($response->isServerError()) {
-            $this->logger->critical($message);
-
-            return;
-        }
 
         $this->logger->info($message);
     }
@@ -88,7 +76,7 @@ class ResponseListener implements EventSubscriberInterface
     public static function getSubscribedEvents()
     {
         return [
-            KernelEvents::RESPONSE => 'onResponse'
+            KernelEvents::REQUEST => 'onRequest'
         ];
     }
 

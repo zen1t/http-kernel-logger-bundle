@@ -16,6 +16,11 @@ use Symfony\Component\DependencyInjection\Loader;
  */
 class VesaxHttpKernelLoggerExtension extends Extension
 {
+    private static $types = [
+        'response' => 'Vesax\HttpKernelLoggerBundle\EventListener\ResponseListener',
+        'request' => 'Vesax\HttpKernelLoggerBundle\EventListener\RequestListener',
+    ];
+
     /**
      * {@inheritdoc}
      */
@@ -25,20 +30,23 @@ class VesaxHttpKernelLoggerExtension extends Extension
         $config = $this->processConfiguration($configuration, $configs);
 
         foreach ($config['zones'] as $rule => $zoneOptions) {
-            $zoneLoggerDefinition = new Definition('Vesax\HttpKernelLoggerBundle\EventListener\ResponseListener', [
+            $type = self::$types[$zoneOptions['type']];
+            $zoneLoggerDefinition = new Definition($type, [
                 new Reference('logger'),
                 new Reference('vesax.http_kernel_logger.formatter'),
-                '|' . $rule . '|'
+                '|'.$rule.'|',
             ]);
 
             $zoneLoggerDefinition->addTag('kernel.event_subscriber');
-            $zoneLoggerDefinition->addTag('monolog.logger', ['channel' => $zoneOptions['channel']]);
+            $zoneLoggerDefinition->addTag('monolog.logger',
+                ['channel' => $zoneOptions['channel']]);
 
-            $container->setDefinition('vesax.http_kernel_logger.loggers.' . md5($rule), $zoneLoggerDefinition);
+            $container->setDefinition('vesax.http_kernel_logger.loggers.'.md5($rule),
+                $zoneLoggerDefinition);
         }
 
-
-        $loader = new Loader\YamlFileLoader($container, new FileLocator(__DIR__.'/../Resources/config'));
+        $loader = new Loader\YamlFileLoader($container,
+            new FileLocator(__DIR__.'/../Resources/config'));
         $loader->load('services.yml');
     }
 }

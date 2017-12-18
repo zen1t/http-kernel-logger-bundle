@@ -15,12 +15,22 @@ class Formatter
 {
 
     /**
-     * @param Request $request
+     * @param Request  $request
      * @param Response $response
+     *
      * @return string
      */
-    public function format(Request $request, Response $response)
+    public function format(Request $request, Response $response = null)
     {
+        if (null === $response) {
+            return sprintf("%s %s      %s      %s",
+                $request->getRealMethod(),
+                $request->getRequestUri(),
+                $this->formatHeaders($request->headers),
+                $this->getContent($request)
+            );
+        }
+
         return sprintf("%s %s      %s      %s <<<< %s %s      %s      %s",
             $request->getRealMethod(),
             $request->getRequestUri(),
@@ -51,6 +61,7 @@ class Formatter
 
     /**
      * @param Request $request
+     *
      * @return null|resource|string
      */
     private function getContent(Request $request)

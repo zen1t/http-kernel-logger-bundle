@@ -5,7 +5,7 @@ Log request and responses
 ## Installation
 ```
 # bash
-composer require zent/http-kernel-logger-bundle ~0.1
+composer require zent/http-kernel-logger-bundle ~0.2
 
 ```
 
@@ -22,4 +22,5 @@ vesax_http_kernel_logger:
     zones:
         "^/api/":
             channel: api
+            #type: response (or request)
 ```
